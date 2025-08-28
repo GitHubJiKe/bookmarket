@@ -90,83 +90,13 @@
     </div>
 
     <!-- 新建/编辑分类模态框 -->
-    <div
+    <CategoryModal
       v-if="showCreateModal || showEditModal"
-      class="fixed inset-0 z-50 overflow-y-auto"
-      aria-labelledby="modal-title"
-      role="dialog"
-      aria-modal="true"
-    >
-      <div class="flex items-center justify-center min-h-screen p-4">
-        <!-- 背景遮罩 -->
-        <div
-          class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-          @click="closeModal"
-          aria-hidden="true"
-        ></div>
-
-        <!-- 模态框内容 -->
-        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:max-w-lg w-full relative z-10">
-          <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div class="flex items-start">
-              <div class="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-full bg-blue-100">
-                <svg class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
-                </svg>
-              </div>
-              
-              <div class="ml-3 w-full">
-                <h3 class="text-lg font-medium text-gray-900 mb-4" id="modal-title">
-                  {{ showEditModal ? '编辑分类' : '新建分类' }}
-                </h3>
-                
-                <form @submit.prevent="handleSubmit" class="space-y-4">
-                  <div>
-                    <label for="tagContent" class="block text-sm font-medium text-gray-700 mb-2">
-                      分类名称
-                    </label>
-                    <input
-                      id="tagContent"
-                      v-model="tagForm.content"
-                      type="text"
-                      required
-                      placeholder="请输入分类名称"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                      :disabled="loading"
-                    />
-                  </div>
-                  
-                  <!-- 错误提示 -->
-                  <div
-                    v-if="errorMessage"
-                    class="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-md text-sm"
-                  >
-                    {{ errorMessage }}
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-          
-          <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
-            <button
-              @click="handleSubmit"
-              :disabled="loading || !tagForm.content.trim()"
-              class="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              <span v-if="loading">保存中...</span>
-              <span v-else>{{ showEditModal ? '更新' : '创建' }}</span>
-            </button>
-            <button
-              @click="closeModal"
-              class="w-full sm:w-auto inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-            >
-              取消
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+      :is-edit="showEditModal"
+      :editing-tag="editingTag"
+      @close="closeModal"
+      @submit="handleSubmit"
+    />
 
     <!-- 删除确认模态框 -->
     <ConfirmModal
@@ -181,10 +111,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useBookmarksStore } from '../stores/bookmarks'
-import { useTagsStore } from '../stores/tags'
-import { formatTime } from '../utils'
-import ConfirmModal from '../components/ConfirmModal.vue'
+import { useBookmarksStore } from '@stores/bookmarks'
+import { useTagsStore } from '@stores/tags'
+import { formatTime } from '@utils/index'
+import ConfirmModal from '@components/ConfirmModal.vue'
+import CategoryModal from '@components/CategoryModal.vue'
 
 const bookmarksStore = useBookmarksStore()
 const tagsStore = useTagsStore()
@@ -197,10 +128,6 @@ const errorMessage = ref('')
 const tagToDelete = ref<string | null>(null)
 const editingTag = ref<any>(null)
 
-const tagForm = ref({
-  content: ''
-})
-
 
 // 获取书签数量
 const getBookmarkCount = (tagId: string) => {
@@ -212,7 +139,6 @@ const getBookmarkCount = (tagId: string) => {
 // 编辑分类
 const editTag = (tag: any) => {
   editingTag.value = tag
-  tagForm.value.content = tag.content
   showEditModal.value = true
 }
 
@@ -240,27 +166,26 @@ const closeModal = () => {
   showCreateModal.value = false
   showEditModal.value = false
   editingTag.value = null
-  tagForm.value.content = ''
   errorMessage.value = ''
 }
 
 // 处理表单提交
-const handleSubmit = async () => {
-  if (!tagForm.value.content.trim()) return
+const handleSubmit = async (data: { content: string }) => {
+  if (!data.content.trim()) return
   
   loading.value = true
   errorMessage.value = ''
   
   try {
     if (showEditModal.value && editingTag.value) {
-      const result = await tagsStore.updateTag(editingTag.value.id, tagForm.value)
+      const result = await tagsStore.updateTag(editingTag.value.id, { content: data.content })
       if (result.success) {
         closeModal()
       } else {
         errorMessage.value = result.message || '更新失败'
       }
     } else {
-      const result = await tagsStore.createTag(tagForm.value)
+      const result = await tagsStore.createTag({ content: data.content })
       if (result.success) {
         closeModal()
       } else {

@@ -175,29 +175,37 @@
       </div>
 
       <div v-else>
-        <!-- 卡片视图 -->
-        <div
-          v-if="bookmarksStore.viewMode === 'card'"
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+        <Transition
+          name="view-transition"
+          mode="out-in"
+          appear
         >
-          <BookmarkCard
-            v-for="bookmark in bookmarksStore.paginatedBookmarks"
-            :key="bookmark.id"
-            :bookmark="bookmark"
-            @delete="handleDeleteBookmark"
-          />
-        </div>
+          <!-- 卡片视图 -->
+          <div
+            v-if="bookmarksStore.viewMode === 'card'"
+            key="card-view"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          >
+            <BookmarkCard
+              v-for="bookmark in bookmarksStore.paginatedBookmarks"
+              :key="bookmark.id"
+              :bookmark="bookmark"
+              @delete="handleDeleteBookmark"
+            />
+          </div>
 
-        <!-- 列表视图 -->
-        <div
-          v-else
-          class="bg-white rounded-lg shadow overflow-hidden"
-        >
-          <BookmarkList
-            :bookmarks="bookmarksStore.paginatedBookmarks"
-            @delete="handleDeleteBookmark"
-          />
-        </div>
+          <!-- 列表视图 -->
+          <div
+            v-else
+            key="list-view"
+            class="bg-white rounded-lg shadow overflow-hidden"
+          >
+            <BookmarkList
+              :bookmarks="bookmarksStore.paginatedBookmarks"
+              @delete="handleDeleteBookmark"
+            />
+          </div>
+        </Transition>
 
         <!-- 分页 -->
         <div v-if="bookmarksStore.totalPages > 1" class="mt-8 flex justify-center">
@@ -255,15 +263,15 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
-import { useBookmarksStore } from '../stores/bookmarks'
-import { useTagsStore } from '../stores/tags'
-import BookmarkCard from '../components/BookmarkCard.vue'
-import BookmarkList from '../components/BookmarkList.vue'
-import ImportModal from '../components/ImportModal.vue'
-import ConfirmModal from '../components/ConfirmModal.vue'
-import UserEditModal from '../components/UserEditModal.vue'
-import { debounce } from '../utils'
+import { useAuthStore } from '@stores/auth'
+import { useBookmarksStore } from '@stores/bookmarks'
+import { useTagsStore } from '@stores/tags'
+import BookmarkCard from '@components/BookmarkCard.vue'
+import BookmarkList from '@components/BookmarkList.vue'
+import ImportModal from '@components/ImportModal.vue'
+import ConfirmModal from '@components/ConfirmModal.vue'
+import UserEditModal from '@components/UserEditModal.vue'
+import { debounce } from '@utils/index'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -355,3 +363,27 @@ onMounted(async () => {
   ])
 })
 </script>
+
+<style scoped>
+/* 视图切换过渡动画 */
+.view-transition-enter-active,
+.view-transition-leave-active {
+  transition: all 0.3s ease-in-out;
+}
+
+.view-transition-enter-from {
+  opacity: 0;
+  transform: translateY(1rem) scale(0.95);
+}
+
+.view-transition-leave-to {
+  opacity: 0;
+  transform: translateY(-1rem) scale(0.95);
+}
+
+.view-transition-enter-to,
+.view-transition-leave-from {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+</style>

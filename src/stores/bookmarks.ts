@@ -2,8 +2,8 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { supabase, TABLES } from '../lib/supabase'
 import type { IBookmark, IBookmarkForm } from '../types'
-import { useAuthStore } from './auth'
-import { formatDateTime } from '../utils'
+import { useAuthStore } from '@stores/auth'
+import { formatDateTime } from '@utils/index'
 
 export const useBookmarksStore = defineStore('bookmarks', () => {
   const bookmarks = ref<IBookmark[]>([])

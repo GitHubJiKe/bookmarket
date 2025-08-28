@@ -57,3 +57,7 @@ export interface IBookmarkForm {
 export interface ITagForm {
   content: string
 }
+
+
+export default {
+}

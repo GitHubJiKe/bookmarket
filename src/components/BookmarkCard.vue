@@ -102,8 +102,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { IBookmark } from '../types'
-import { useTagsStore } from '../stores/tags'
-import { formatTime } from '../utils'
+import { useTagsStore } from '@stores/tags'
+import { formatTime } from '@utils/index'
 import QRCodeModal from './QRCodeModal.vue'
 
 interface Props {

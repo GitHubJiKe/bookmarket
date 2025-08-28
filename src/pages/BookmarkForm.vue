@@ -164,10 +164,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useBookmarksStore } from '../stores/bookmarks'
-import { useTagsStore } from '../stores/tags'
+import { useBookmarksStore } from '@stores/bookmarks'
+import { useTagsStore } from '@stores/tags'
 import type { IBookmarkForm } from '../types'
-import { fetchWebsiteInfo as fetchInfo, isValidUrl } from '../utils'
+import { fetchWebsiteInfo as fetchInfo, isValidUrl } from '@utils/index'
 
 const route = useRoute()
 const router = useRouter()
