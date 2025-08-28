@@ -34,6 +34,12 @@
                 class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10"
               >
                 <button
+                  @click="handleUpdateUser"
+                  class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  修改用户信息
+                </button>
+                <button
                   @click="handleLogout"
                   class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                 >
@@ -227,6 +233,14 @@
       @import="handleImport"
     />
 
+    <!-- 用户信息编辑模态框 -->
+    <UserEditModal
+      v-if="showUserEditModal"
+      :user="authStore.user!"
+      @close="showUserEditModal = false"
+      @success="handleUserUpdateSuccess"
+    />
+
     <!-- 删除确认模态框 -->
     <ConfirmModal
       v-if="showDeleteModal"
@@ -248,6 +262,7 @@ import BookmarkCard from '../components/BookmarkCard.vue'
 import BookmarkList from '../components/BookmarkList.vue'
 import ImportModal from '../components/ImportModal.vue'
 import ConfirmModal from '../components/ConfirmModal.vue'
+import UserEditModal from '../components/UserEditModal.vue'
 import { debounce } from '../utils'
 
 const router = useRouter()
@@ -258,6 +273,7 @@ const tagsStore = useTagsStore()
 const showUserMenu = ref(false)
 const showImportModal = ref(false)
 const showDeleteModal = ref(false)
+const showUserEditModal = ref(false)
 const bookmarkToDelete = ref<string | null>(null)
 
 const searchQuery = computed({
@@ -307,6 +323,18 @@ const handleImport = async (bookmarksData: any[]) => {
     showImportModal.value = false
     // 可以显示成功提示
   }
+}
+
+// 处理修改用户信息
+const handleUpdateUser = () => {
+  showUserEditModal.value = true
+  showUserMenu.value = false
+}
+
+// 处理用户信息更新成功
+const handleUserUpdateSuccess = () => {
+  // 可以显示成功提示或执行其他操作
+  console.log('用户信息更新成功')
 }
 
 // 处理登出

@@ -84,8 +84,8 @@
       
       <!-- 时间信息 -->
       <div class="flex items-center justify-between text-xs text-gray-500">
-        <span>{{ formatTime(bookmark.create_time) }}</span>
-        <span>{{ formatTime(bookmark.update_time) }}</span>
+        <span>{{ formatTime(bookmark.create_time) }}创建</span>
+        <span>{{ formatTime(bookmark.update_time) }}更新</span>
       </div>
     </div>
 
