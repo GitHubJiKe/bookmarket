@@ -1,0 +1,15 @@
+@import 'tailwindcss';
+
+@font-face {
+  font-family: 'LXGWWenKai';
+  src: url('@assets/fonts/LXGWWenKai-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'GoogleSans';
+  src: url('@assets/fonts/GoogleSansCode[wght].ttf') format('truetype');
+}
+
+* {
+  font-family: 'GoogleSans', 'LXGWWenKai', sans-serif;
+}

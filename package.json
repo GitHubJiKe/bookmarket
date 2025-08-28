@@ -1,0 +1,30 @@
+{
+  "name": "bookmarket",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@chenfengyuan/vue-qrcode": "2",
+    "@supabase/supabase-js": "^2.56.0",
+    "@tailwindcss/vite": "^4.1.12",
+    "axios": "^1.11.0",
+    "dayjs": "^1.11.15",
+    "pinia": "^3.0.3",
+    "qrcode": "1",
+    "tailwindcss": "^4.1.12",
+    "vue": "^3.5.18",
+    "vue-router": "4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.1",
+    "@vue/tsconfig": "^0.7.0",
+    "typescript": "~5.8.3",
+    "vite": "^7.1.2",
+    "vue-tsc": "^3.0.5"
+  }
+}
