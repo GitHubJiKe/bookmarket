@@ -37,7 +37,7 @@ export const useAuthStore = defineStore('auth', () => {
         .from(TABLES.USERS)
         .select('*')
         .eq('email', credentials.email)
-        .eq('pwd', credentials.password)
+        .eq('pwd', btoa(credentials.password))
         .single();
 
       if (error) throw error;
@@ -82,7 +82,7 @@ export const useAuthStore = defineStore('auth', () => {
       const newUser: Omit<IUser, 'id' | 'create_time' | 'update_time'> = {
         username: userData.username,
         email: userData.email,
-        pwd: userData.password,
+        pwd: btoa(userData.password), // 使用btoa进行base64编码
         // create_time: Date.now(),
         // update_time: Date.now()
       };
